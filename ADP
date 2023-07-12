@@ -1,0 +1,103 @@
+def ConstBoard(Board):
+    print("current State of the Board: \n\n")
+    for i in range(0,9):
+        if(i>0 and (i%3==0)):
+            print("\n")
+        if (Board[i]==0):
+            print("_ ",end=" ")
+        if (Board[i]==-1):
+            print("X ",end=" ")
+        if (Board[i]==1):
+            print("O ",end=" ")
+    print("\n\n")
+def User1Turn(Board):
+    pos = int(input("enter X's Position from [1,2,3,.....9]"))
+    if(Board[pos-1]!=0):
+        print("Wrong Move")
+        exit(0)
+    Board[pos-1]=-1
+def User2Turn(Board):
+    pos = int(input("enter O's Position from [0,2,3,...,9]"))
+    if(Board[pos-1]!=0):
+        print("Wrong Move")
+        exit(0)
+    Board[pos-1]=1
+def minmax(Board,player):
+    x = analyseBoard(Board)
+    if(x!=0):
+        return (x*player)
+    pos = -1
+    value=-2
+    for i in range(0,9):
+        if(Board[i]==0):
+            Board[i]=player
+            score = -minmax(Board,player*-1)
+            Board[i]=0
+            if(score>value):
+                value=score
+                pos=i
+    if(pos==-1):
+        return 0
+    return value
+
+
+def ComTurn(Board):
+    pos = -1
+    value=-2
+    for i in range(0,9):
+        if(Board[i]==0):
+            Board[i]=1
+            score = -minmax(Board,-1)
+            Board[i]=0
+            if(score>value):
+                value=score
+                pos=i
+
+    Board[pos]=1
+
+def analyseBoard(Board):
+    cb = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
+
+    for i in range(0,8):
+        if(Board[cb[i][0]]!=0 and 
+           Board[cb[i][0]]==Board[cb[i][1]] and 
+           Board[cb[i][0]]==Board[cb[i][2]]):
+            return Board[cb[i][0]]
+    return 0    
+def main():
+    choice = int(input("Enter 1 for Single Player,2 for Multiplayer:"))
+    Board = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    if (choice==1):
+        print("Computer: O VS You:X")
+        chance = int(input("enter 1 to play first \n 2. to play 2nd"))
+        for i in range(0,9):
+            if(analyseBoard(Board)!=0):
+                break
+            if (i+chance)%2==0:
+                ComTurn(Board)
+            else:
+                ConstBoard(Board)
+                User1Turn(Board)
+    else:
+        for i in range(0,9):
+            if(analyseBoard(Board)!=0):
+                break
+            if i%2==0:
+                ConstBoard(Board)
+                User1Turn(Board)
+            else:
+                ConstBoard(Board)
+                User2Turn(Board)
+
+    x = analyseBoard(Board)
+    if(x==0):
+        ConstBoard(Board)
+        print("Draw!")
+    if(x==-1):
+        ConstBoard(Board)
+        print("Player X wins!!!")
+    if(x==1):
+        ConstBoard(Board)
+        print("player O wins!!!")
+
+main()
